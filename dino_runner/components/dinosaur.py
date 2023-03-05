@@ -15,7 +15,7 @@ class Dinosaur(Sprite):
 
     def __init__(self):
         self.image = RUNNING[0]
-        self.rect = self.image.get_rect
+        self.rect = self.image.get_rect()
         self.rect.x = self.POSITION_X
         self.rect.y = self.POSITION_Y
 
@@ -24,6 +24,7 @@ class Dinosaur(Sprite):
         self.jump_velocity = self.JUMP_VELOCITY
 
     def update(self, user_input):
+
         if self.action == DINO_RUNNING:
             self.run()
             
@@ -32,15 +33,12 @@ class Dinosaur(Sprite):
 
         if user_input[pygame.K_UP]:
             self.action = DINO_JUMPING
-        else:
-            self.action = DINO_RUNNING
         
         if self.step >= 10:
                 self.step = 0
-        
 
-    def draw(self):
-        self.screen.blit(self.image, (self.rect.x , self.rect.y))
+    def draw(self, screen):
+        screen.blit(self.image, (self.rect.x , self.rect.y))
 
     def run(self):
         self.image = RUNNING[self.step // 5]

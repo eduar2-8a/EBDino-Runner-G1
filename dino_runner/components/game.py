@@ -1,8 +1,8 @@
 import pygame
 
-from dino_runner.components import Dinosaur
-
 from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS
+
+from dino_runner.components.dinosaur import Dinosaur
 
 
 class Game:
@@ -43,7 +43,6 @@ class Game:
         self.player.draw(self.screen)
         pygame.display.update()
         pygame.display.flip()
-
 
     def draw_background(self):
         image_width = BG.get_width()
