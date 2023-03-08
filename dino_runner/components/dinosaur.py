@@ -72,3 +72,8 @@ class Dinosaur(Sprite):
         self.rect.x = self.POSITION_X
         self.image = DUCKING[self.step // 5]
         self.step += 1
+
+    def reset(self):
+        self.rect.y = self.POSITION_Y
+        self.rect.x = self.POSITION_X
+        self.jump_velocity = self.JUMP_VELOCITY

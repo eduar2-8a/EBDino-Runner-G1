@@ -1,6 +1,7 @@
 import pygame
 from dino_runner.utils.constants import FONT_STYLE
 
+
 class Score:
     def __init__(self):
         self.score = 0
@@ -14,6 +15,10 @@ class Score:
         font = pygame.font.Font(FONT_STYLE, 24)
         text = font.render(f"Score: {self.score}", True, (0, 0, 0))
         text_rect = text.get_rect()
-        text.rect.center = (950, 30)
+        text_rect.center = (950, 30)
         screen.blit(text, text_rect)
+
+    def reset(self, game):
+        self.score = 0
+        game.game_speed = game.GAME_SPEED
         
