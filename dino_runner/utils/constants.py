@@ -11,6 +11,8 @@ IMG_DIR = os.path.join(os.path.dirname(__file__), "..", "assets")
 # Assets Constants
 ICON = pygame.image.load(os.path.join(IMG_DIR, "DinoWallpaper.png"))
 
+DINO_DEAD = pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoDead.png"))
+
 RUNNING = [
     pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoRun1.png")),
     pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoRun2.png")),
@@ -22,7 +24,7 @@ RUNNING_SHIELD = [
 ]
 
 RUNNING_HAMMER = [
-    pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoDuck1Hammer.png")),
+    pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoRun1Hammer.png")),
     pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoRun2.png")),
 ]
 
@@ -75,5 +77,6 @@ GAME_OVER = pygame.image.load(os.path.join(IMG_DIR, 'Other/GameOver.png'))
 
 DEFAULT_TYPE = "default"
 SHIELD_TYPE = "shield"
+HAMMER_TYPE = "hammer"
 
 FONT_STYLE = "freesansbold.ttf"

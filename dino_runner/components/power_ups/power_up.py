@@ -5,7 +5,7 @@ import random
 from dino_runner.utils.constants import SCREEN_WIDTH
 
 class PowerUp(Sprite):
-    def __init__(self, image , type):
+    def __init__(self, image: Surface , type):
         self.image = image
         self.rect = self.image.get_rect()
         self.rect.x = SCREEN_WIDTH + random.randint(800,1000)
@@ -17,7 +17,7 @@ class PowerUp(Sprite):
 
     def update(self, game_speed, power_ups):
         self.rect.x -= game_speed
-        if self.rect.x < SCREEN_WIDTH:
+        if self.rect.x < -SCREEN_WIDTH:
             power_ups.remove(self)
 
     def draw(self, screen):

@@ -3,7 +3,9 @@ import pygame
 from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DINO_START, SHIELD_TYPE, GAME_OVER
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
+from dino_runner.components.obstacles.cloud.cloud_manager import CloudManager
 from dino_runner.components.power_ups.power_up_manager import PowerUpManager
+
 from dino_runner.components.score import Score
 from dino_runner.components.text import draw_text
 
@@ -26,6 +28,7 @@ class Game:
         self.player = Dinosaur()
         self.obstacle_manager = ObstacleManager()
         self.power_up_manager = PowerUpManager()
+        self.cloud_manager = CloudManager()
         self.score = Score()
         self.death_count = 0
 
@@ -37,6 +40,7 @@ class Game:
         pygame.quit()
 
     def start_game(self):
+        self.reset()
         # Game loop: events - update - draw
         self.playing = True
         while self.playing:
@@ -48,12 +52,14 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.playing = False
+                self.executing = False
 
     def update(self):
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
         self.obstacle_manager.update(self, self.on_death)
         self.power_up_manager.update(self.game_speed, self.score.score, self.player)
+        self.cloud_manager.update(self.game_speed, self.score.score)
         self.score.update(self)
 
     def draw(self):
@@ -61,6 +67,7 @@ class Game:
         self.screen.fill((255, 255, 255))
         self.draw_background()
         self.obstacle_manager.draw(self.screen)
+        self.cloud_manager.draw(self.screen)
         self.power_up_manager.draw(self.screen)
         self.player.draw(self.screen)
         self.score.draw(self.screen)
@@ -80,7 +87,9 @@ class Game:
     def on_death(self):
         is_invincible = self.player.type == SHIELD_TYPE
         if not is_invincible:
+            self.player.on_death()
             self.death_count += 1
+            self.game_speed = 0
             self.playing = False
 
     def show_menu(self):
@@ -115,8 +124,10 @@ class Game:
                 self.start_game()
 
     def reset(self):
+        self.game_speed = self.GAME_SPEED
+        self.player.reset()
         self.obstacle_manager.reset()
         self.power_up_manager.reset()
-        self.player.reset()
+        self.cloud_manager.reset()
         self.score.reset(self)
         

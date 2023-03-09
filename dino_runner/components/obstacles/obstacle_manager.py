@@ -1,5 +1,6 @@
 from dino_runner.components.obstacles.cactus import Cactus
 from dino_runner.components.obstacles.bird import Bird
+from dino_runner.utils.constants import HAMMER_TYPE
 
 import pygame
 import random
@@ -18,11 +19,12 @@ class ObstacleManager:
 
         for obstacle in self.obstacles:
             obstacle.update(game.game_speed, self.obstacles)
-            if game.player.rect.colliderect(obstacle.rect):
-                pygame.time.delay(100)
+            if game.player.rect.colliderect(obstacle.rect) and game.player.type != HAMMER_TYPE:
                 on_death()
-
-                
+            elif game.player.rect.colliderect(obstacle.rect) and game.player.type == HAMMER_TYPE:
+                game.player.hammer_time()
+                self.obstacles.remove(obstacle)
+      
     def draw(self, screen):
         for obstacle in self.obstacles:
             obstacle.draw(screen)
