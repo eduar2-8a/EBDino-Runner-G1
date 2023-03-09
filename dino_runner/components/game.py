@@ -1,9 +1,11 @@
 import pygame
 
-from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DINO_START, FONT_STYLE
+from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DINO_START, SHIELD_TYPE, GAME_OVER
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
+from dino_runner.components.power_ups.power_up_manager import PowerUpManager
 from dino_runner.components.score import Score
+from dino_runner.components.text import draw_text
 
 
 class Game:
@@ -23,10 +25,9 @@ class Game:
 
         self.player = Dinosaur()
         self.obstacle_manager = ObstacleManager()
+        self.power_up_manager = PowerUpManager()
         self.score = Score()
         self.death_count = 0
-        self.max_score = 0
-        self.final_score = 0
 
     def run(self):
         self.executing = True
@@ -52,6 +53,7 @@ class Game:
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
         self.obstacle_manager.update(self, self.on_death)
+        self.power_up_manager.update(self.game_speed, self.score.score, self.player)
         self.score.update(self)
 
     def draw(self):
@@ -59,8 +61,10 @@ class Game:
         self.screen.fill((255, 255, 255))
         self.draw_background()
         self.obstacle_manager.draw(self.screen)
+        self.power_up_manager.draw(self.screen)
         self.player.draw(self.screen)
         self.score.draw(self.screen)
+        self.player.check_power_up(self.screen)
         #pygame.display.update()
         pygame.display.flip()
 
@@ -74,29 +78,32 @@ class Game:
         self.x_pos_bg -= self.game_speed
 
     def on_death(self):
-        self.death_count += 1
-        self.playing = False
-        self.final_score = self.score.score
-        if self.final_score > self.max_score:
-            self.max_score = self.final_score 
+        is_invincible = self.player.type == SHIELD_TYPE
+        if not is_invincible:
+            self.death_count += 1
+            self.playing = False
 
     def show_menu(self):
         # Rellenar de color blanco la pantalla
         self.screen.fill((255, 255, 255))
         # Mensaje de bienvenida centrada
         if not self.death_count:
-            self.draw_text("Welcome, press any key to start!", True, 32, 0, 0)
+            draw_text(self.screen, "Welcome, press any key to start!",
+                       True, 32, 0, SCREEN_HEIGHT // 2, (0,0,0))
+            self.screen.blit(DINO_START, (SCREEN_WIDTH // 2 - 40, 
+                            SCREEN_HEIGHT // 2 -140))
         else:
-            self.draw_text(f"Your score: {self.final_score}, Deathcount: {self.death_count}, Max Score: {self.max_score}", True, 32, 0, 0)
+            draw_text(self.screen, f"Your score: {self.score.final_score}",
+                       True, 32, 0, SCREEN_HEIGHT // 2, (0,0,0))
+            draw_text(self.screen, f"Deaths: {self.death_count}",
+                       True, 24, 0, SCREEN_HEIGHT // 2 + 30, (0,0,0))
+            draw_text(self.screen, f"Hi-Score: {self.score.max_score}",
+                       True, 24, 0, SCREEN_HEIGHT // 2 + 60, (0,0,0))
+            self.screen.blit(GAME_OVER, (SCREEN_WIDTH // 2 -190, 
+                            SCREEN_HEIGHT // 2 -140))
             self.reset()
-            #tarea aqui: añadir un mensaje de reinicio del juego y del numero de muertes,
-            #y otro de cuantos puntos obtuve en una run
-        # Poner una imagen a modo de icono en el centro
-        self.screen.blit(DINO_START, (SCREEN_WIDTH // 2 - 40, 
-                                      SCREEN_HEIGHT // 2 -140))
-        # Plasmar los cambios
+
         pygame.display.flip()
-        # Manejar eventos
         self.handle_menu_events()
 
     def handle_menu_events(self):
@@ -109,18 +116,7 @@ class Game:
 
     def reset(self):
         self.obstacle_manager.reset()
+        self.power_up_manager.reset()
         self.player.reset()
         self.score.reset(self)
-
-    #if the text needs to be centered, just enter True as 2nd parameter and left the last two parameters (pos y and x) as 0 
-    def draw_text(self, text, is_centered, size, pos_x, pos_y):
-        font = pygame.font.Font(FONT_STYLE, size)
-        text = font.render(text, True, (0, 0, 0))
-        text_rect = text.get_rect()
-
-        if is_centered:
-            text_rect.center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-        else:
-            text_rect.center = (pos_x, pos_y)
-        self.screen.blit(text, text_rect)
         
